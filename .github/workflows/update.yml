@@ -2,7 +2,7 @@ name: Update OpenCode
 
 on:
   schedule:
-    - cron: "15 */3 * * *"
+    - cron: "15 * * * *"
   workflow_dispatch:
 
 jobs:
