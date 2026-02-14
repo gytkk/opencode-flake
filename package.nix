@@ -25,7 +25,7 @@ let
     "x86_64-linux" = {
       suffix = "linux-x64";
       ext = "tar.gz";
-      hash = "sha256-HT50emCNLbess93zKVZCPfHdOuJpHexU0+oajdsp0RI=";
+      hash = "sha256-wHN7EkxI88IUBMyyoYYsu1IsA+M5E6NcKjYMh1tXc2M=";
     };
     "aarch64-linux" = {
       suffix = "linux-arm64";
