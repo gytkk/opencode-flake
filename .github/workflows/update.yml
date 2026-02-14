@@ -22,6 +22,10 @@ jobs:
           chmod +x ./scripts/update.sh
           ./scripts/update.sh
 
+      - name: Verify build
+        run: |
+          git diff --quiet package.nix || nix build .#opencode --no-link
+
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
