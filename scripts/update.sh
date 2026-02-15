@@ -44,16 +44,18 @@ for system in aarch64-darwin x86_64-darwin x86_64-linux aarch64-linux; do
   echo "Fetching hash for $system..."
   # Use fetchzip with an empty hash to get the correct NAR hash from the error message.
   # nix-prefetch-url --unpack computes a flat hash which differs from fetchzip's NAR hash.
-  sri_hash=$(nix build --impure --no-link --expr "
+  nix_output=$(nix build --impure --no-link --expr "
     (import <nixpkgs> {}).fetchzip {
       url = \"$url\";
       hash = \"sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\";
       stripRoot = false;
     }
-  " 2>&1 | grep 'got:' | awk '{print $2}')
+  " 2>&1 || true)
+  sri_hash=$(echo "$nix_output" | sed -n 's/.*got: *\(sha256-[A-Za-z0-9+/]*=*\).*/\1/p')
 
   if [ -z "$sri_hash" ]; then
     echo "ERROR: Failed to fetch hash for $system"
+    echo "nix output: $nix_output"
     exit 1
   fi
 
