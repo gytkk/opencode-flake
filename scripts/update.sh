@@ -42,8 +42,21 @@ for system in aarch64-darwin x86_64-darwin x86_64-linux aarch64-linux; do
   url="https://github.com/anomalyco/opencode/releases/download/v${LATEST}/opencode-${suffix}.${ext}"
 
   echo "Fetching hash for $system..."
-  raw_hash=$(nix-prefetch-url --unpack "$url" 2>/dev/null)
-  sri_hash=$(nix hash convert --hash-algo sha256 --to sri "$raw_hash")
+  # Use fetchzip with an empty hash to get the correct NAR hash from the error message.
+  # nix-prefetch-url --unpack computes a flat hash which differs from fetchzip's NAR hash.
+  sri_hash=$(nix build --impure --no-link --expr "
+    (import <nixpkgs> {}).fetchzip {
+      url = \"$url\";
+      hash = \"sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\";
+      stripRoot = false;
+    }
+  " 2>&1 | grep 'got:' | awk '{print $2}')
+
+  if [ -z "$sri_hash" ]; then
+    echo "ERROR: Failed to fetch hash for $system"
+    exit 1
+  fi
+
   HASHES[$system]="$sri_hash"
   echo "  $system: $sri_hash"
 done
