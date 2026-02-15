@@ -1,8 +1,9 @@
 name: Update OpenCode
 
 on:
+  push:
   schedule:
-    - cron: "15 * * * *"
+    - cron: "15 */3 * * *"
   workflow_dispatch:
 
 jobs:
